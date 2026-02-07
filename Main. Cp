@@ -65,8 +65,8 @@ int main() {
     vector<Product> products;
     vector<Invoice> invoices;
     
-    customers.push_back(Customer(1, "Alice", "0123456789"));
-    customers.push_back(Customer(2, "Bob", "0987654321"));
+    customers.push_back(Customer(1, "Tchalla", "0123456789"));
+    customers.push_back(Customer(2, "Tiego", "0987654321"));
     customers.push_back(Customer(3, "Charlie", "0112233445"));
 
     products.push_back(Product(1, "Pen", 10));
