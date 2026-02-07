@@ -1,0 +1,145 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+class Customer {
+private:
+    int id;
+    string name;
+    string contact;
+public:
+    Customer(int i, string n, string c) : id(i), name(n), contact(c) {}
+    int getID() { return id; }
+    string getName() { return name; }
+    string getContact() { return contact; }
+    void display() {
+        cout << "ID: " << id << ", Name: " << name << ", Contact: " << contact << endl;
+    }
+};
+
+class Product {
+private:
+    int id;
+    string name;
+    double price;
+public:
+    Product(int i, string n, double p) : id(i), name(n), price(p) {}
+    int getID() { return id; }
+    string getName() { return name; }
+    double getPrice() { return price; }
+    void display() {
+        cout << "ID: " << id << ", Name: " << name << ", Price: ₹" << fixed << setprecision(2) << price << endl;
+    }
+};
+
+class Invoice {
+private:
+    int invoiceID;
+    Customer customer;
+    vector<pair<Product, int>> items;
+public:
+    Invoice(int id, Customer c) : invoiceID(id), customer(c) {}
+    void addItem(Product p, int qty) {
+        items.push_back({p, qty});
+    }
+    void displayInvoice() {
+        cout << "\n--- Invoice #" << invoiceID << " ---" << endl;
+        cout << "Customer: " << customer.getName() << ", Contact: " << customer.getContact() << endl;
+        cout << "Items Purchased:" << endl;
+        double total = 0;
+        for (auto &item : items) {
+            double subtotal = item.first.getPrice() * item.second;
+            total += subtotal;
+            cout << "  " << item.first.getName() << " x " << item.second 
+                 << " = ₹" << fixed << setprecision(2) << subtotal << endl;
+        }
+        cout << "Total Amount: ₹" << fixed << setprecision(2) << total << endl;
+        cout << "-------------------------" << endl;
+    }
+};
+
+int main() {
+    vector<Customer> customers;
+    vector<Product> products;
+    vector<Invoice> invoices;
+    
+    customers.push_back(Customer(1, "Alice", "0123456789"));
+    customers.push_back(Customer(2, "Bob", "0987654321"));
+    customers.push_back(Customer(3, "Charlie", "0112233445"));
+
+    products.push_back(Product(1, "Pen", 10));
+    products.push_back(Product(2, "Notebook", 50));
+    products.push_back(Product(3, "Bag", 500));
+
+    int invoiceCounter = 1;
+    int choice;
+    do {
+        cout << "\n=== Billing Software Menu ===\n";
+        cout << "1. View Customers\n2. View Products\n3. Generate Invoice\n4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+                cout << "\n--- Customers ---\n";
+                for (auto &c : customers) c.display();
+                break;
+            case 2:
+                cout << "\n--- Products ---\n";
+                for (auto &p : products) p.display();
+                break;
+            case 3: {
+                cout << "\nEnter Customer ID: ";
+                int cid; cin >> cid;
+                Customer selectedCustomer = customers[0];
+                bool found = false;
+                for (auto &c : customers) {
+                    if (c.getID() == cid) {
+                        selectedCustomer = c;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    cout << "Customer not found!\n"; break;
+                }
+
+                Invoice invoice(invoiceCounter++, selectedCustomer);
+                int addMore = 1;
+                while (addMore) {
+                    cout << "Enter Product ID: ";
+                    int pid; cin >> pid;
+                    Product selectedProduct = products[0];
+                    found = false;
+                    for (auto &p : products) {
+                        if (p.getID() == pid) {
+                            selectedProduct = p;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        cout << "Product not found!\n"; continue;
+                    }
+                    cout << "Enter Quantity: ";
+                    int qty; cin >> qty;
+                    invoice.addItem(selectedProduct, qty);
+                    cout << "Add another product? (1 = Yes, 0 = No): ";
+                    cin >> addMore;
+                }
+                invoices.push_back(invoice);
+                invoice.displayInvoice();
+                break;
+            }
+            case 4:
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+
+    } while (choice != 4);
+    return 0;
+}
